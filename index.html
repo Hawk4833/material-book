@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#c4501b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23c4501b'/%3E%3Ctext x='32' y='44' font-family='Arial' font-weight='700' font-size='34' text-anchor='middle' fill='white'%3EX%3C/text%3E%3C/svg%3E">
+<title>Xpert Material Book</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f3f0;--panel:#fff;--fg:#1d1f21;--muted:#62666b;--line:#dcdad5;--chip:#ebe9e4;--accent:#c4501b;--accent-soft:#fbe7dc;--ok:#2f7d4f;--ok-soft:#e1f1e6;--warn:#9a6a00;--warn-soft:#fbf0d2;--bad:#b3261e;--bad-soft:#f9e1df;--body:'Archivo',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#141516;--panel:#1d1f21;--fg:#ecebe8;--muted:#a3a7ab;--line:#33363a;--chip:#2a2d30;--accent:#ef7a45;--accent-soft:#3a2418;--ok:#5fbf86;--ok-soft:#183324;--warn:#e0b04a;--warn-soft:#352a10;--bad:#f08a80;--bad-soft:#3a1b19}}
+*{box-sizing:border-box}[hidden]{display:none!important}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 var(--body)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 96px}
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:18px 0 10px;border-bottom:3px solid var(--fg)}
+h1{margin:0;font:800 clamp(22px,5vw,32px)/1 var(--body);letter-spacing:-.01em;text-transform:uppercase}
+h1 span{color:var(--accent)}
+.who{font:12px var(--mono);color:var(--muted);text-align:right}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;padding:10px 0;position:sticky;top:0;background:var(--bg);z-index:5;border-bottom:1px solid var(--line)}
+nav.tabs button{border:0;background:none;padding:8px 12px;border-radius:999px;color:var(--muted);font-weight:600;white-space:nowrap}
+nav.tabs button[aria-selected="true"]{background:var(--fg);color:var(--bg)}
+nav.tabs .badge{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:9px;background:var(--accent);color:#fff;font:600 11px/18px var(--mono);text-align:center}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px}
+input[type=text],input[type=password],input[type=number],input[type=date],input[type=search],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+label.f{display:grid;gap:4px;font-size:13px;font-weight:600}
+.primary{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:10px 16px;font-weight:700}
+.primary:disabled{opacity:.55;cursor:default}
+.ghost{background:none;border:1px solid var(--line);border-radius:6px;padding:9px 14px;font-weight:600}
+.danger{color:var(--bad)}
+.note{font-size:13px;color:var(--muted);margin:6px 0 0}
+.err{color:var(--bad);font-size:14px;min-height:20px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.chip{border:0;background:var(--chip);border-radius:999px;padding:5px 11px;font-size:13px}
+.chip[aria-pressed="true"]{background:var(--fg);color:var(--bg)}
+.count{font:12px var(--mono);color:var(--muted)}
+/* login */
+.login{max-width:380px;margin:12vh auto 0;display:grid;gap:12px}
+/* product list */
+.item{border-bottom:1px solid var(--line)}
+.row{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:4px 14px;width:100%;padding:12px 2px;background:none;border:0;text-align:left}
+.row:hover{background:var(--panel)}
+.thumb{width:64px;height:64px;border-radius:6px;border:1px solid var(--line);background:#fff;object-fit:contain;grid-row:1/span 2}
+.thumb.ph{display:grid;place-items:center;background:var(--chip);color:var(--muted);font:600 11px var(--mono);text-transform:uppercase}
+.pname{font-weight:700}
+.spec{font-size:13px;color:var(--muted)}
+.price{font:600 16px var(--mono);text-align:right}
+.unit{font:11px var(--mono);color:var(--muted);text-align:right}
+.sub{grid-column:2/-1;display:flex;flex-wrap:wrap;gap:4px 12px;font-size:13px;color:var(--muted)}
+.aka{color:var(--fg)}.aka b{font:600 11px var(--mono);color:var(--accent);margin-right:4px}
+.tag{font:500 10.5px var(--mono);text-transform:uppercase;letter-spacing:.05em;background:var(--chip);padding:1px 6px;border-radius:3px}
+.detail{margin:0 0 14px 78px;display:grid;gap:12px}
+.detail section{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}
+.detail h3{margin:0 0 8px;font:700 13px var(--body);text-transform:uppercase;letter-spacing:.04em}
+.nchip{display:inline-flex;align-items:center;gap:2px;background:var(--accent-soft);border-radius:999px;padding:3px 4px 3px 10px;font-size:13px;margin:0 6px 6px 0}
+.nchip button{border:0;background:none;width:24px;height:24px;border-radius:50%;color:var(--muted)}
+.inline{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.inline > *{flex:1 1 140px}
+.inline > button{flex:0 0 auto}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th{font:600 11px var(--mono);text-transform:uppercase;color:var(--muted);text-align:left;padding:6px;border-bottom:1px solid var(--line)}
+td{padding:6px;border-bottom:1px solid var(--line);vertical-align:top}
+td.num{font-family:var(--mono);text-align:right;white-space:nowrap}
+.scroll{overflow-x:auto}
+@media (max-width:560px){.chips{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px}.chip{white-space:nowrap}.detail{margin-left:0}.thumb{width:52px;height:52px}.row{grid-template-columns:52px minmax(0,1fr) auto}}
+/* requests */
+.req{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:4px 12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.req .thumb{width:52px;height:52px}
+.st{font:600 11px var(--mono);text-transform:uppercase;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.st.Requested{background:var(--warn-soft);color:var(--warn)}.st.Verified{background:var(--accent-soft);color:var(--accent)}
+.st.Done{background:var(--ok-soft);color:var(--ok)}.st.Rejected,.st.Cancelled{background:var(--bad-soft);color:var(--bad)}
+.acts{grid-column:2/-1;display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.acts button{padding:7px 12px}
+.donebox{grid-column:1/-1;display:grid;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}
+.kpi b{display:block;font:700 22px var(--mono)}
+.kpi span{font-size:12px;color:var(--muted)}
+.cartbar{position:fixed;left:0;right:0;bottom:0;background:var(--fg);color:var(--bg);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:9}
+.cartbar button{background:var(--accent);color:#fff;border:0;border-radius:6px;padding:9px 14px;font-weight:700}
+dialog{border:0;border-radius:10px;padding:0;max-width:min(94vw,760px);width:100%;background:var(--panel);color:var(--fg)}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+dialog .stage{background:#fff;display:grid;place-items:center;max-height:75vh}
+dialog .stage img{max-width:100%;max-height:75vh;object-fit:contain}
+dialog .cap{padding:12px 16px;font-size:13px;color:var(--muted)}
+dialog .x{position:absolute;top:8px;right:8px;width:36px;height:36px;border-radius:50%;border:0;background:var(--fg);color:var(--bg);font-size:18px}
+.toast{position:fixed;left:50%;bottom:80px;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:8px;z-index:20;font-size:14px}
+.empty{padding:28px 0;text-align:center;color:var(--muted)}
+.loading{padding:40px 0;text-align:center;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><h1>Xpert <span>Material Book</span></h1><div class="who" id="who"></div></header>
+
+  <!-- login -->
+  <form class="login card" id="loginForm" hidden>
+    <h2 style="margin:0">Sign in</h2>
+    <label class="f">ID<input type="text" id="lid" autocomplete="username" autocapitalize="none" required></label>
+    <label class="f">Password<input type="password" id="lpw" autocomplete="current-password" required></label>
+    <div class="err" id="lerr" role="alert"></div>
+    <button class="primary" id="lbtn">Sign in</button>
+    <p class="note">Ask your manager for an ID and password.</p>
+  </form>
+
+  <!-- forced password change -->
+  <form class="login card" id="pwForm" hidden>
+    <h2 style="margin:0">Choose a new password</h2>
+    <p class="note" style="margin:0">You signed in with a temporary password. Pick your own (at least 6 characters).</p>
+    <label class="f" id="opl">Temporary password<input type="password" id="op" autocomplete="current-password"></label>
+    <label class="f">New password<input type="password" id="np1" autocomplete="new-password" required minlength="6"></label>
+    <label class="f">Repeat new password<input type="password" id="np2" autocomplete="new-password" required minlength="6"></label>
+    <div class="err" id="perr" role="alert"></div>
+    <button class="primary">Save password</button>
+  </form>
+
+  <div id="app" hidden>
+    <nav class="tabs" role="tablist" id="tabs"></nav>
+    <main id="view"></main>
+  </div>
+  <div class="loading" id="boot">Loading…</div>
+</div>
+<div class="cartbar" id="cartbar" hidden><span id="cartTxt"></span><button type="button" id="cartGo">Review request</button></div>
+<dialog id="lb" aria-label="Product photo"><button class="x" type="button" id="lbX" aria-label="Close">✕</button><div class="stage"><img id="lbImg" alt=""></div><div class="cap" id="lbCap"></div></dialog>
+
+<script>
+// ---------- server bridge (Google Apps Script API) ----------
+const API = "https:\/\/script.google.com/macros/s/AKfycbypVTVrc3B01303rVcPQH9mu2RjMoDAhT53E0MKForH1w6poyj7G5PtxAd7fyzTQCnG/exec";
+async function call(fn, ...args){
+  let r;
+  try {
+    const res = await fetch(API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ fn, args }), credentials: "omit", redirect: "follow" });
+    r = await res.json();
+  } catch (e) { throw new Error("Can't reach the server. Check your internet connection and try again."); }
+  if (!r || !r.ok) {
+    const m = String((r && r.error) || "Something went wrong.");
+    if (/SESSION/.test(m)) { signOut(true); throw new Error("Please sign in again."); }
+    throw new Error(m.replace(/^(Exception|Error):\s*/, ""));
+  }
+  return r.result;
+}
+const LS = { get(k){ try { return localStorage.getItem(k); } catch { return null; } }, set(k,v){ try { localStorage.setItem(k,v); } catch {} }, del(k){ try { localStorage.removeItem(k); } catch {} } };
+const $ = s => document.querySelector(s);
+function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+const money = n => n == null || isNaN(n) ? "" : "$" + Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const money4 = n => n == null || isNaN(n) ? "" : "$" + Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:n<1?3:2});
+const fmtDate = s => { if (!s) return ""; const [y,m,d] = String(s).slice(0,10).split("-"); return y && m && d ? `${+m}/${+d}/${y.slice(2)}` : s; };
+function toast(t){ const d = el("div","toast",t); document.body.append(d); setTimeout(()=>d.remove(), 2600); }
+
+// ---------- state ----------
+let TOKEN = LS.get("xmb_token"), ME = null, D = null, THUMBS = {};
+let tab = "products", cat = "All", term = "", reqFilter = "open", reqProject = "", projSel = "";
+const openKeys = new Set();
+let CART = []; try { CART = JSON.parse(LS.get("xmb_cart") || "[]"); } catch { CART = []; }
+const saveCart = () => { LS.set("xmb_cart", JSON.stringify(CART)); cartBar(); };
+
+// ---------- auth ----------
+$("#loginForm").onsubmit = async e => {
+  e.preventDefault(); $("#lerr").textContent = ""; $("#lbtn").disabled = true;
+  try {
+    const r = await call("login", $("#lid").value, $("#lpw").value);
+    TOKEN = r.token; LS.set("xmb_token", TOKEN); ME = r.user; const pw = $("#lpw").value; $("#lpw").value = "";
+    if (ME.mustChange) showPw(pw); else start();
+  } catch (err) { $("#lerr").textContent = err.message; }
+  finally { $("#lbtn").disabled = false; }
+};
+function showPw(pw){ $("#loginForm").hidden = true; $("#app").hidden = true; $("#pwForm").hidden = false; $("#op").value = pw || ""; $("#opl").hidden = !!pw; }
+$("#pwForm").onsubmit = async e => {
+  e.preventDefault(); $("#perr").textContent = "";
+  const a = $("#np1").value, b = $("#np2").value;
+  if (a !== b) { $("#perr").textContent = "The two passwords don't match."; return; }
+  const old = $("#op").value;
+  if (!old) { $("#opl").hidden = false; $("#perr").textContent = "Enter the temporary password you signed in with."; return; }
+  try { await call("changePassword", TOKEN, old, a); $("#op").value = ""; $("#np1").value = ""; $("#np2").value = ""; $("#pwForm").hidden = true; toast("Password saved."); start(); }
+  catch (err) { $("#perr").textContent = err.message; }
+};
+function signOut(silent){
+  if (TOKEN && !silent) call("logout", TOKEN).catch(()=>{});
+  TOKEN = null; ME = null; D = null; LS.del("xmb_token");
+  $("#app").hidden = true; $("#cartbar").hidden = true; $("#who").textContent = ""; $("#boot").hidden = true;
+  $("#pwForm").hidden = true; $("#loginForm").hidden = false;
+}
+
+async function start(){
+  $("#loginForm").hidden = true; $("#boot").hidden = false; $("#boot").textContent = "Loading…";
+  try { D = await call("getData", TOKEN); } catch (e) { if (TOKEN) { $("#boot").textContent = e.message; } return; }
+  ME = D.user;
+  if (ME.mustChange) { $("#boot").hidden = true; showPw(); return; }
+  index();
+  $("#who").textContent = `${ME.name} · ${ME.role}`;
+  $("#boot").hidden = true; $("#app").hidden = false;
+  drawTabs(); render(); cartBar();
+  const cached = LS.get("xmb_thumbs");
+  if (cached) { try { THUMBS = JSON.parse(cached); render(); } catch {} }
+  call("getThumbs", TOKEN).then(t => { THUMBS = t; LS.set("xmb_thumbs", JSON.stringify(t)); render(); }).catch(()=>{});
+}
+let reloading = false;
+async function reload(){ if (reloading || !TOKEN) return; reloading = true;
+  try { D = await call("getData", TOKEN); index(); drawTabs(); render(); } catch (e) { toast(e.message); } finally { reloading = false; } }
+setInterval(() => { if (D && !document.hidden && (tab === "requests" || tab === "projects") && !document.querySelector(".donebox")) reload(); }, 60000);
+
+// ---------- indexes ----------
+let PRODUCTS = [], NICK = new Map(), PHOTO = new Map(), STOCK = new Map(), LOW = new Map();
+const isMgr = () => ME && (ME.role === "admin" || ME.role === "manager");
+function index(){
+  NICK = new Map(); D.nick.forEach(n => { if (!NICK.has(n.b)) NICK.set(n.b, []); NICK.get(n.b).push(n); });
+  PHOTO = new Map(D.photos.map(p => [p.b, p]));
+  STOCK = new Map(D.stock.map(s => [s.b, s]));
+  const g = new Map();
+  for (const i of D.items){ const k = (i.p + "|" + (i.s||"")).toLowerCase(); if (!g.has(k)) g.set(k, []); g.get(k).push(i); }
+  PRODUCTS = [...g.values()].map(a => { a.sort((x,y) => String(y.d).localeCompare(String(x.d))); const priced = a.find(x => x.pr != null) || a[0]; return { latest: priced, all: a }; })
+    .sort((a,b) => String(b.latest.d).localeCompare(String(a.latest.d)));
+  LOW = new Map();
+  if (D.prices) for (const i of D.items){ if (i.pu == null) continue; const k = i.k + "|" + i.cu; const c = LOW.get(k); if (!c || i.pu < c.pu) LOW.set(k, i); }
+}
+const nickNames = b => (NICK.get(b) || []).map(n => n.n);
+
+// ---------- tabs ----------
+function drawTabs(){
+  const t = $("#tabs"); t.replaceChildren();
+  const open = D.reqs.filter(r => r.status === "Requested" || r.status === "Verified").length;
+  const list = [["products","Products"],["requests", isMgr() ? "To purchase" : "Requests", open],["projects","Projects"]];
+  if (ME.role === "admin") list.push(["users","Users"]);
+  list.push(["account","Account"]);
+  for (const [k,label,badge] of list){
+    const b = el("button",null,label); b.type = "button"; b.setAttribute("role","tab"); b.setAttribute("aria-selected", tab === k);
+    if (badge) b.append(el("span","badge",String(badge)));
+    b.onclick = () => { tab = k; drawTabs(); render(); window.scrollTo(0,0); if (k === "requests" || k === "projects") reload(); };
+    t.append(b);
+  }
+}
+function render(){
+  if (!D) return;
+  const v = $("#view"); v.replaceChildren();
+  ({products:vProducts, requests:vRequests, projects:vProjects, users:vUsers, account:vAccount, cart:vCart}[tab] || vProducts)(v);
+  cartBar();
+}
+
+// ---------- photos ----------
+const DRIVE_THUMB = "https:\/\/drive.google.com/thumbnail?id=";
+function thumbEl(b, cat, name){
+  const own = PHOTO.get(b), st = STOCK.get(b);
+  let src = own ? DRIVE_THUMB + encodeURIComponent(own.id) + "&sz=w300" : THUMBS[b];
+  if (!src && st && st.L) src = st.L;
+  if (!src){ const p = el("div","thumb ph",(cat||"").split(/[\s&/]+/).filter(Boolean).slice(0,2).map(w=>w[0]).join("")); p.setAttribute("aria-hidden","true"); return p; }
+  const i = el("img","thumb"); i.src = src; i.alt = own ? "Team photo" : "Example photo"; i.loading = "lazy";
+  i.onerror = () => { if (own && THUMBS[b] && i.src !== THUMBS[b]) i.src = THUMBS[b]; };
+  i.onclick = e => { e.stopPropagation(); bigPhoto(b, name); };
+  i.style.cursor = "zoom-in";
+  return i;
+}
+function bigPhoto(b, name){
+  const own = PHOTO.get(b), st = STOCK.get(b);
+  const img = $("#lbImg");
+  if (own){ img.src = DRIVE_THUMB + encodeURIComponent(own.id) + "&sz=w1600"; img.alt = "Team photo of " + name; $("#lbCap").textContent = `${name} — photo added by ${own.by}`; }
+  else if (st){ img.src = st.L || THUMBS[b] || ""; img.alt = "Example photo"; $("#lbCap").textContent = `${name} — example photo (not your exact item): ${st.t} — ${st.s}`; }
+  else return;
+  $("#lb").showModal();
+}
+$("#lbX").onclick = () => $("#lb").close();
+$("#lb").addEventListener("click", e => { if (e.target === $("#lb")) $("#lb").close(); });
+
+async function shrink(file){
+  const bmp = await createImageBitmap(file);
+  const k = Math.min(1, 1400 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas"); c.width = Math.round(bmp.width*k); c.height = Math.round(bmp.height*k);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  return c.toDataURL("image/jpeg", 0.85);
+}
+
+// ---------- products ----------
+function vProducts(v){
+  const search = el("input"); search.type = "search"; search.placeholder = "Search product, nickname, size, store, project…"; search.value = term;
+  search.setAttribute("aria-label","Search products");
+  search.oninput = () => { term = search.value.trim().toLowerCase(); drawList(); };
+  v.append(el("div",null), search);
+  const cats = ["All", ...new Set(D.items.map(i => i.c).filter(Boolean))].sort((a,b)=> a==="All"?-1:b==="All"?1:a.localeCompare(b));
+  const cb = el("div","chips");
+  for (const c of cats){ const b = el("button","chip",c); b.type="button"; b.setAttribute("aria-pressed", c===cat); b.onclick = () => { cat = c; [...cb.children].forEach(x=>x.setAttribute("aria-pressed", x.textContent===cat)); drawList(); }; cb.append(b); }
+  v.append(cb);
+  const cnt = el("div","count"); v.append(cnt);
+  const list = el("div"); v.append(list);
+  function drawList(){
+    list.replaceChildren();
+    const words = term.split(/\s+/).filter(Boolean);
+    const shown = PRODUCTS.filter(g => (cat==="All" || g.latest.c===cat) &&
+      words.every(w => g.all.some(i => [i.p,i.s,i.st,i.it,i.c,i.k,i.pj,i.j,...nickNames(i.b)].join(" ").toLowerCase().includes(w))));
+    cnt.textContent = `${shown.length} of ${PRODUCTS.length} products`;
+    if (!shown.length){ list.append(el("div","empty","Nothing matches. Try a shorter word.")); return; }
+    for (const g of shown.slice(0, 300)) list.append(productRow(g));
+    if (shown.length > 300) list.append(el("div","empty",`Showing 300 of ${shown.length}. Search to narrow it down.`));
+  }
+  drawList();
+  search.focus({preventScroll:true});
+}
+function productRow(g){
+  const i = g.latest, key = i.p + "|" + (i.s||"");
+  const item = el("div","item");
+  const row = el("button","row"); row.type = "button"; row.setAttribute("aria-expanded", openKeys.has(key));
+  const left = el("div"); left.append(el("div","pname",i.p)); if (i.s) left.append(el("div","spec",i.s));
+  const right = el("div");
+  if (D.prices && i.pr != null){ right.append(el("div","price",money(i.pr)), el("div","unit","per " + (i.u||""))); }
+  const sub = el("div","sub");
+  const nn = nickNames(i.b); if (nn.length){ const a = el("span","aka"); a.append(el("b",null,"AKA"), document.createTextNode(nn.join(", "))); sub.append(a); }
+  sub.append(el("span",null,i.st), el("span",null,fmtDate(i.d)));
+  if (g.all.length > 1) sub.append(el("span",null,`${g.all.length} purchases`));
+  const low = LOW.get(i.k + "|" + i.cu); if (low && i.pu != null && low.pu < i.pu) sub.append(el("span",null,`Lowest ${money4(low.pu)}/${low.cu} at ${low.st}`));
+  sub.append(el("span","tag",i.c||""));
+  row.append(thumbEl(i.b, i.c, i.p), left, right, sub);
+  const det = el("div","detail");
+  const draw = () => { det.replaceChildren(...detailParts(g)); };
+  row.onclick = () => { if (openKeys.has(key)) { openKeys.delete(key); det.remove(); row.setAttribute("aria-expanded","false"); } else { openKeys.add(key); draw(); item.append(det); row.setAttribute("aria-expanded","true"); } };
+  item.append(row); if (openKeys.has(key)) { draw(); item.append(det); }
+  return item;
+}
+function detailParts(g){
+  const i = g.latest, out = [];
+  // request
+  const rq = el("section"); rq.append(el("h3",null,"Request for a project"));
+  const f = el("form","inline");
+  const qty = el("input"); qty.type = "number"; qty.min = "0"; qty.step = "any"; qty.required = true; qty.placeholder = "Qty"; qty.setAttribute("aria-label","Quantity");
+  const unit = el("input"); unit.type = "text"; unit.value = i.u || ""; unit.placeholder = "Unit (box, ea, case)"; unit.setAttribute("aria-label","Unit");
+  const add = el("button","primary","Add to request"); add.type = "submit";
+  f.append(qty, unit, add);
+  f.onsubmit = e => { e.preventDefault(); const q = Number(qty.value); if (!(q > 0)) return;
+    CART.push({ product:i.p, specs:i.s||"", base:i.b, cat:i.c, qty:q, unit:unit.value.trim(), note:"" }); saveCart(); qty.value = ""; toast(`Added ${q} ${unit.value} ${i.p}`); };
+  rq.append(f); out.push(rq);
+  // nicknames
+  const nk = el("section"); nk.append(el("h3",null,"Nicknames"));
+  const box = el("div");
+  const list = NICK.get(i.b) || [];
+  if (!list.length) box.append(el("span","note","No nicknames yet."));
+  for (const n of list){
+    const c = el("span","nchip"); c.append(document.createTextNode(n.n));
+    if (isMgr() || n.by === ME.id){ const x = el("button",null,"×"); x.type="button"; x.setAttribute("aria-label","Remove " + n.n);
+      x.onclick = async () => { try { await call("removeNickname", TOKEN, i.b, n.n); D.nick = D.nick.filter(z => !(z.b===i.b && z.n===n.n)); index(); render(); } catch(e){ toast(e.message); } }; c.append(x); }
+    box.append(c);
+  }
+  nk.append(box);
+  const nf = el("form","inline"); const ni = el("input"); ni.type="text"; ni.maxLength = 40; ni.placeholder = "Add a nickname"; ni.setAttribute("aria-label","New nickname");
+  const nb = el("button","primary","Add"); nb.type = "submit"; nf.append(ni, nb);
+  nf.onsubmit = async e => { e.preventDefault(); const val = ni.value.trim(); if (!val) return; nb.disabled = true;
+    try { await call("addNickname", TOKEN, i.b, val); D.nick.push({ b:i.b, n:val, by:ME.id }); index(); render(); toast("Nickname saved"); }
+    catch(err){ toast(err.message); nb.disabled = false; } };
+  nk.append(nf, el("p","note","Applies to every size and store of this product. Everyone can search by it."));
+  out.push(nk);
+  // photo
+  const ph = el("section"); ph.append(el("h3",null,"Photo"));
+  const own = PHOTO.get(i.b);
+  const lab = el("label","primary"); lab.style.display = "inline-block"; lab.textContent = own ? "Replace photo" : "Add a photo";
+  const inp = document.createElement("input"); inp.type = "file"; inp.accept = "image/*"; inp.hidden = true; lab.append(inp);
+  const msg = el("p","note");
+  inp.onchange = async () => { const fl = inp.files && inp.files[0]; if (!fl) return; msg.textContent = "Uploading…";
+    try { const data = await shrink(fl); const r = await call("uploadPhoto", TOKEN, i.b, data); PHOTO.set(i.b, { b:i.b, id:r.id, by:ME.id }); D.photos = [...PHOTO.values()]; render(); toast("Photo saved"); }
+    catch(e){ msg.textContent = e.message || "Couldn't upload."; } finally { inp.value = ""; } };
+  const row = el("div","inline"); row.style.alignItems = "center"; row.append(lab);
+  if (own && (isMgr() || own.by === ME.id)){ const rm = el("button","ghost","Remove photo"); rm.type="button";
+    rm.onclick = async () => { try { await call("removePhoto", TOKEN, i.b); PHOTO.delete(i.b); D.photos = [...PHOTO.values()]; render(); } catch(e){ toast(e.message); } }; row.append(rm); }
+  ph.append(row, msg, el("p","note", own ? `Team photo added by ${own.by}.` : (STOCK.get(i.b) ? "Showing an example photo from a supply store." : "No photo yet.")));
+  out.push(ph);
+  // history
+  const hs = el("section"); hs.append(el("h3",null,"Purchase history"));
+  const sc = el("div","scroll"); const tb = el("table");
+  const hr = el("tr"); const cols = ["Date","Store","Qty","Project"]; if (D.prices) cols.push("Unit price","Line total");
+  cols.forEach(x => hr.append(el("th",null,x))); tb.append(hr);
+  for (const p of g.all){
+    const tr = el("tr"); tr.append(el("td",null,fmtDate(p.d)), el("td",null,p.st), el("td","num",(p.q??"") + " " + (p.u||"")), el("td",null,p.pj||""));
+    if (D.prices) tr.append(el("td","num", p.pr==null ? "no price" : money(p.pr)), el("td","num", p.pr==null||p.q==null ? "" : money(p.pr*p.q)));
+    tb.append(tr);
+  }
+  sc.append(tb); hs.append(sc); out.push(hs);
+  return out;
+}
+
+// ---------- cart ----------
+function cartBar(){
+  const b = $("#cartbar");
+  if (!D || !CART.length || tab === "cart"){ b.hidden = true; return; }
+  b.hidden = false; $("#cartTxt").textContent = `${CART.length} item${CART.length>1?"s":""} in your request`;
+}
+$("#cartGo").onclick = () => { tab = "cart"; drawTabs(); render(); window.scrollTo(0,0); };
+function vCart(v){
+  const c = el("div","card"); v.append(el("div",null), c); c.style.marginTop = "12px";
+  c.append(el("h2",null,"New purchase request"));
+  if (!CART.length){ c.append(el("p","note","Nothing added yet. Open a product and use “Add to request”.")); return; }
+  const tb = el("table"); const hr = el("tr"); ["Item","Qty","Unit","Note",""].forEach(x=>hr.append(el("th",null,x))); tb.append(hr);
+  CART.forEach((l, idx) => {
+    const tr = el("tr");
+    const t1 = el("td"); t1.append(el("div","pname",l.product)); if (l.specs) t1.append(el("div","spec",l.specs));
+    const q = el("input"); q.type="number"; q.min="0"; q.step="any"; q.value = l.qty; q.style.width="80px"; q.setAttribute("aria-label","Quantity"); q.onchange = () => { l.qty = Number(q.value); saveCart(); };
+    const u = el("input"); u.type="text"; u.value = l.unit; u.style.width="90px"; u.setAttribute("aria-label","Unit"); u.onchange = () => { l.unit = u.value; saveCart(); };
+    const n = el("input"); n.type="text"; n.value = l.note; n.placeholder="optional"; n.setAttribute("aria-label","Note"); n.onchange = () => { l.note = n.value; saveCart(); };
+    const x = el("button","ghost danger","Remove"); x.type="button"; x.onclick = () => { CART.splice(idx,1); saveCart(); render(); };
+    const tq = el("td"); tq.append(q); const tu = el("td"); tu.append(u); const tn = el("td"); tn.append(n); const tx = el("td"); tx.append(x);
+    tr.append(t1,tq,tu,tn,tx); tb.append(tr);
+  });
+  const sc = el("div","scroll"); sc.append(tb); c.append(sc);
+  const f = el("form"); f.style.display="grid"; f.style.gap="10px"; f.style.marginTop="14px";
+  const pl = el("label","f","Project"); const ps = el("select"); ps.required = true;
+  ps.append(new Option("Choose a project…",""));
+  D.projects.forEach(p => ps.append(new Option(p,p))); ps.append(new Option("+ New project…","__new"));
+  const pn = el("input"); pn.type="text"; pn.placeholder="New project name"; pn.hidden = true; pn.setAttribute("aria-label","New project name");
+  ps.onchange = () => { pn.hidden = ps.value !== "__new"; if (!pn.hidden) pn.focus(); };
+  pl.append(ps, pn);
+  const nl = el("label","f","Needed by (optional)"); const nd = el("input"); nd.type = "date"; nl.append(nd);
+  const err = el("div","err");
+  const go = el("button","primary","Send request to purchasing"); go.type = "submit";
+  f.append(pl, nl, err, go); c.append(f);
+  f.onsubmit = async e => { e.preventDefault(); err.textContent = "";
+    const proj = ps.value === "__new" ? pn.value.trim() : ps.value;
+    if (!proj){ err.textContent = "Pick or type a project."; return; }
+    if (CART.some(l => !(l.qty > 0))){ err.textContent = "Every item needs a quantity above 0."; return; }
+    go.disabled = true;
+    try { const ids = await call("createRequests", TOKEN, proj, nd.value, CART.map(({product,specs,base,qty,unit,note}) => ({product,specs,base,qty,unit,note})));
+      CART = []; saveCart(); toast(`Sent ${ids.length} item${ids.length>1?"s":""} to purchasing`); tab = "requests"; await reload(); }
+    catch(e2){ err.textContent = e2.message; go.disabled = false; } };
+}
+
+// ---------- requests / to purchase ----------
+function vRequests(v){
+  const top = el("div","chips");
+  [["open","Open"],["Requested","Waiting to verify"],["Verified","Verified – to buy"],["Done","Purchased"],["closed","Rejected / cancelled"],["all","All"]].forEach(([k,l]) => {
+    const b = el("button","chip",l); b.type="button"; b.setAttribute("aria-pressed", reqFilter===k); b.onclick = () => { reqFilter = k; render(); }; top.append(b); });
+  const rf = el("button","ghost","Refresh"); rf.type = "button"; rf.onclick = () => reload(); top.append(rf);
+  v.append(top);
+  const ps = el("select"); ps.setAttribute("aria-label","Filter by project"); ps.append(new Option("All projects",""));
+  [...new Set(D.reqs.map(r => r.pj))].sort().forEach(p => ps.append(new Option(p,p))); ps.value = reqProject;
+  ps.onchange = () => { reqProject = ps.value; render(); }; v.append(ps);
+  let list = D.reqs.filter(r => !reqProject || r.pj === reqProject);
+  list = list.filter(r => reqFilter==="all" || (reqFilter==="open" ? (r.status==="Requested"||r.status==="Verified") : reqFilter==="closed" ? (r.status==="Rejected"||r.status==="Cancelled") : r.status===reqFilter));
+  list.sort((a,b) => String(b.at).localeCompare(String(a.at)));
+  const cnt = el("div","count",`${list.length} item${list.length===1?"":"s"}`); cnt.style.marginTop = "8px"; v.append(cnt);
+  if (!list.length){ v.append(el("div","empty", reqFilter==="open" ? "No open requests." : "Nothing here.")); return; }
+  const groups = new Map(); list.forEach(r => { if (!groups.has(r.pj)) groups.set(r.pj, []); groups.get(r.pj).push(r); });
+  for (const [pj, rs] of groups){
+    v.append(el("h3",null,pj));
+    for (const r of rs) v.append(reqRow(r));
+  }
+}
+function reqRow(r){
+  const box = el("div","req");
+  box.append(thumbEl(r.b, "", r.p));
+  const mid = el("div"); mid.append(el("div","pname",`${r.q} ${r.u||""} · ${r.p}`)); if (r.s) mid.append(el("div","spec",r.s));
+  const meta = el("div","spec"); meta.textContent = [`Requested by ${r.by} ${fmtDate(r.at)}`, r.need && `needed by ${fmtDate(r.need)}`, r.note && `“${r.note}”`].filter(Boolean).join(" · ");
+  mid.append(meta);
+  if (r.status==="Verified"||r.status==="Rejected") mid.append(el("div","spec",[`${r.status} by ${r.vby} ${fmtDate(r.vat)}`, r.mnote && `— ${r.mnote}`].filter(Boolean).join(" ")));
+  if (r.status==="Done") mid.append(el("div","spec",[`Purchased by ${r.pby} ${fmtDate(r.pat)}`, r.st && `at ${r.st}`, D.prices && r.tot != null && `· ${money(r.tot)}`].filter(Boolean).join(" ")));
+  box.append(mid, el("span","st " + r.status, r.status));
+  const acts = el("div","acts");
+  const act = async (a, f) => { try { await call("updateRequest", TOKEN, r.id, a, f||{}); await reload(); toast("Updated"); } catch(e){ toast(e.message); } };
+  if (isMgr()){
+    if (r.status==="Requested"){ const b1 = el("button","primary","Verify"); b1.type="button"; b1.onclick = () => act("verify");
+      const b2 = el("button","ghost danger","Reject"); b2.type="button"; b2.onclick = () => { const n = prompt("Reason (optional):",""); if (n !== null) act("reject",{note:n}); }; acts.append(b1,b2); }
+    if (r.status==="Requested"||r.status==="Verified"){ const b3 = el("button", r.status==="Verified" ? "primary" : "ghost","Mark as purchased"); b3.type="button";
+      b3.onclick = () => { if (box.querySelector(".donebox")) return; box.append(doneBox(r, act)); }; acts.append(b3); }
+    if (r.status==="Done"||r.status==="Rejected"||r.status==="Cancelled"){ const b4 = el("button","ghost","Reopen"); b4.type="button"; b4.onclick = () => act("reopen"); acts.append(b4); }
+  } else if (r.by === ME.id && r.status==="Requested"){ const b5 = el("button","ghost danger","Cancel"); b5.type="button"; b5.onclick = () => { if (confirm("Cancel this request?")) act("cancel"); }; acts.append(b5); }
+  if (acts.children.length) box.append(acts);
+  return box;
+}
+function doneBox(r, act){
+  const d = el("form","donebox");
+  d.append(el("strong",null,"Purchase details"));
+  const g = el("div","inline");
+  const st = el("input"); st.type="text"; st.placeholder="Store"; st.setAttribute("aria-label","Store");
+  const lowItem = D.items.filter(i => i.b === r.b && i.pr != null).sort((a,b)=>String(b.d).localeCompare(String(a.d)))[0];
+  if (lowItem) st.value = lowItem.st;
+  const q = el("input"); q.type="number"; q.step="any"; q.min="0"; q.value = r.q; q.setAttribute("aria-label","Quantity bought");
+  const p = el("input"); p.type="number"; p.step="0.01"; p.min="0"; p.placeholder="Unit price $"; p.setAttribute("aria-label","Unit price");
+  if (lowItem && D.prices && lowItem.u === r.u) p.value = lowItem.pr;
+  g.append(st, q, p);
+  const ok = el("button","primary","Save as purchased"); ok.type="submit";
+  const cx = el("button","ghost","Cancel"); cx.type="button"; cx.onclick = () => d.remove();
+  const bar = el("div","inline"); bar.append(ok, cx);
+  d.append(g, el("p","note","Price is optional; leave it blank if the receipt will come through the nightly sync."), bar);
+  d.onsubmit = e => { e.preventDefault(); act("done", { store: st.value, qty: q.value, unitPrice: p.value }); };
+  return d;
+}
+
+// ---------- projects ----------
+function vProjects(v){
+  const names = [...new Set([...D.projects, ...D.items.map(i => i.pj).filter(Boolean), ...D.reqs.map(r => r.pj)])].sort();
+  const ps = el("select"); ps.setAttribute("aria-label","Project"); ps.append(new Option("Choose a project…",""));
+  names.forEach(n => ps.append(new Option(n,n))); ps.value = projSel; ps.onchange = () => { projSel = ps.value; render(); };
+  ps.style.marginTop = "12px"; v.append(ps);
+  if (isMgr()){ const ap = el("button","ghost","+ Add project"); ap.type="button"; ap.style.marginTop="8px";
+    ap.onclick = async () => { const n = prompt("Project name:"); if (!n) return; const a = prompt("Address (optional):","") || "";
+      try { await call("addProject", TOKEN, n, a); projSel = n.trim(); await reload(); } catch(e){ toast(e.message); } }; v.append(ap); }
+  if (!projSel){ v.append(projOverview(names)); return; }
+  const its = D.items.filter(i => i.pj === projSel);
+  const done = D.reqs.filter(r => r.pj === projSel && r.status === "Done");
+  const open = D.reqs.filter(r => r.pj === projSel && (r.status === "Requested" || r.status === "Verified"));
+  const rows = new Map();
+  const addRow = (b, p, s, cat, q, u, tot, src) => { const k = (p+"|"+(s||"")+"|"+(u||"")).toLowerCase();
+    if (!rows.has(k)) rows.set(k, { b, p, s, cat, u, q:0, tot:0, priced:true, n:0, src:new Set() });
+    const r = rows.get(k); r.q += Number(q)||0; r.n++; r.src.add(src); if (tot == null) r.priced = false; else r.tot += tot; };
+  its.forEach(i => addRow(i.b, i.p, i.s, i.c, i.q, i.u, i.pr != null && i.q != null ? i.pr*i.q : null, "Receipts"));
+  done.forEach(r => addRow(r.b, r.p, r.s, "", r.q, r.u, r.tot != null ? r.tot : null, "Requests"));
+  const total = [...rows.values()].reduce((a,r) => a + r.tot, 0);
+  const k = el("div","kpis");
+  const kp = (val, lab) => { const d = el("div","kpi"); d.append(el("b",null,val), el("span",null,lab)); return d; };
+  k.append(kp(String(rows.size),"different products"), kp(String(its.length + done.length),"purchase lines"), kp(String(open.length),"open requests"));
+  if (D.prices) k.append(kp(money(total),"total spent (before tax)"));
+  v.append(k);
+  const sc = el("div","scroll"); const tb = el("table");
+  const hr = el("tr"); const cols = ["Product","Qty","Times"]; if (D.prices) cols.push("Total"); cols.push("From");
+  cols.forEach(x => hr.append(el("th",null,x))); tb.append(hr);
+  [...rows.values()].sort((a,b) => (b.tot - a.tot) || a.p.localeCompare(b.p)).forEach(r => {
+    const tr = el("tr"); const t1 = el("td"); t1.append(el("div","pname",r.p)); if (r.s) t1.append(el("div","spec",r.s));
+    tr.append(t1, el("td","num",`${+r.q.toFixed(2)} ${r.u||""}`), el("td","num",String(r.n)));
+    if (D.prices) tr.append(el("td","num", r.tot ? money(r.tot) + (r.priced ? "" : " +") : (r.priced ? money(0) : "no price")));
+    tr.append(el("td",null,[...r.src].join(", "))); tb.append(tr); });
+  sc.append(tb); v.append(sc);
+  v.append(el("p","note","Totals include receipts tagged to this project plus requests marked as purchased with a price. “+” means some lines had no price. If a purchased request's receipt is also synced later, it can appear twice — leave the price blank on the request to avoid that."));
+}
+function projOverview(names){
+  const wrap = el("div");
+  const sc = el("div","scroll"); const tb = el("table");
+  const hr = el("tr"); const cols = ["Project","Purchase lines","Open requests"]; if (D.prices) cols.push("Total spent"); cols.forEach(x => hr.append(el("th",null,x))); tb.append(hr);
+  names.map(n => { const its = D.items.filter(i => i.pj === n), dn = D.reqs.filter(r => r.pj === n && r.status === "Done");
+      return { n, lines: its.length + dn.length, open: D.reqs.filter(r => r.pj === n && (r.status==="Requested"||r.status==="Verified")).length,
+        tot: its.reduce((a,i) => a + (i.pr != null && i.q != null ? i.pr*i.q : 0), 0) + dn.reduce((a,r) => a + (r.tot||0), 0) }; })
+    .sort((a,b) => b.tot - a.tot || b.lines - a.lines)
+    .forEach(r => { const tr = el("tr"); const a = el("button","ghost",r.n); a.type="button"; a.style.border="0"; a.style.padding="0"; a.style.textAlign="left"; a.style.color="var(--accent)";
+      a.onclick = () => { projSel = r.n; render(); }; const t = el("td"); t.append(a);
+      tr.append(t, el("td","num",String(r.lines)), el("td","num",String(r.open))); if (D.prices) tr.append(el("td","num",money(r.tot))); tb.append(tr); });
+  sc.append(tb); wrap.append(sc); wrap.style.marginTop = "12px";
+  return wrap;
+}
+
+// ---------- users (admin) ----------
+async function vUsers(v){
+  const c = el("div","card"); c.style.marginTop="12px"; v.append(c);
+  c.append(el("h2",null,"Add a person"));
+  const f = el("form","inline");
+  const id = el("input"); id.type="text"; id.placeholder="ID (e.g. riadul)"; id.required = true; id.autocapitalize="none"; id.setAttribute("aria-label","ID");
+  const nm = el("input"); nm.type="text"; nm.placeholder="Name"; nm.setAttribute("aria-label","Name");
+  const rl = el("select"); rl.setAttribute("aria-label","Role"); [["worker","Worker"],["manager","Purchasing manager"],["admin","Admin"]].forEach(([k,l]) => rl.append(new Option(l,k)));
+  const b = el("button","primary","Add"); b.type = "submit"; f.append(id, nm, rl, b); c.append(f);
+  const out = el("p","note"); c.append(out);
+  f.onsubmit = async e => { e.preventDefault(); b.disabled = true;
+    try { const r = await call("saveUser", TOKEN, { id:id.value, name:nm.value, role:rl.value }); out.textContent = `Added. ID: ${id.value.trim().toLowerCase()}  Temporary password: ${r.tempPassword} — give these to them; they will pick their own password at first sign-in.`; id.value=""; nm.value=""; drawUsers(); }
+    catch(err){ out.textContent = err.message; } finally { b.disabled = false; } };
+  const ul = el("div"); v.append(ul);
+  async function drawUsers(){
+    ul.replaceChildren(el("div","loading","Loading people…"));
+    let us; try { us = await call("listUsers", TOKEN); } catch(e){ ul.replaceChildren(el("div","err",e.message)); return; }
+    const tb = el("table"); const hr = el("tr"); ["ID","Name","Role","Status","Last sign-in",""].forEach(x => hr.append(el("th",null,x))); tb.append(hr);
+    us.forEach(u => { const tr = el("tr"); tr.append(el("td",null,u.id), el("td",null,u.name), el("td",null,u.role), el("td",null,u.active?"Active":"Off"), el("td",null,fmtDate(u.lastLogin)));
+      const t = el("td");
+      const rp = el("button","ghost","Reset password"); rp.type="button"; rp.onclick = async () => { if (!confirm(`Reset ${u.id}'s password?`)) return;
+        try { const r = await call("saveUser", TOKEN, { id:u.id, name:u.name, role:u.role, active:u.active, resetPassword:true }); alert(`New temporary password for ${u.id}: ${r.tempPassword}`); } catch(e){ toast(e.message); } };
+      const tg = el("button","ghost", u.active ? "Turn off" : "Turn on"); tg.type="button"; tg.onclick = async () => {
+        try { await call("saveUser", TOKEN, { id:u.id, name:u.name, role:u.role, active:!u.active }); drawUsers(); } catch(e){ toast(e.message); } };
+      const role = el("select"); role.setAttribute("aria-label","Role for " + u.id); [["worker","Worker"],["manager","Manager"],["admin","Admin"]].forEach(([k,l]) => role.append(new Option(l,k))); role.value = u.role;
+      role.onchange = async () => { try { await call("saveUser", TOKEN, { id:u.id, name:u.name, role:role.value, active:u.active }); toast("Role saved"); } catch(e){ toast(e.message); role.value = u.role; } };
+      t.style.display="flex"; t.style.gap="6px"; t.style.flexWrap="wrap"; t.append(role, rp, tg); tr.append(t); tb.append(tr); });
+    const sc = el("div","scroll"); sc.append(tb); ul.replaceChildren(sc);
+  }
+  drawUsers();
+}
+
+// ---------- account ----------
+function vAccount(v){
+  const c = el("div","card"); c.style.marginTop="12px"; v.append(c);
+  c.append(el("h2",null,"Your account"), el("p",null,`${ME.name} (${ME.id}) — ${ME.role}`));
+  const f = el("form"); f.style.display="grid"; f.style.gap="10px"; f.style.maxWidth="360px";
+  const o = el("input"); o.type="password"; o.autocomplete="current-password"; o.required = true;
+  const n1 = el("input"); n1.type="password"; n1.autocomplete="new-password"; n1.required = true; n1.minLength = 6;
+  const l1 = el("label","f","Current password"); l1.append(o); const l2 = el("label","f","New password"); l2.append(n1);
+  const er = el("div","err"); const b = el("button","primary","Change password"); b.type="submit";
+  f.append(l1,l2,er,b); c.append(el("h3",null,"Change password"), f);
+  f.onsubmit = async e => { e.preventDefault(); er.textContent = ""; try { await call("changePassword", TOKEN, o.value, n1.value); o.value = n1.value = ""; toast("Password changed"); } catch(err){ er.textContent = err.message; } };
+  const so = el("button","ghost","Sign out"); so.type="button"; so.style.marginTop="16px"; so.onclick = () => signOut(false); c.append(so);
+}
+
+// ---------- boot ----------
+if (TOKEN) start(); else signOut(true);
+</script>
+</body>
+</html>
