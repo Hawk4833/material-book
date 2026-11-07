@@ -12,6 +12,13 @@
 :root{--bg:#f4f3f0;--panel:#fff;--fg:#1d1f21;--muted:#62666b;--line:#dcdad5;--chip:#ebe9e4;--accent:#c4501b;--accent-soft:#fbe7dc;--ok:#2f7d4f;--ok-soft:#e1f1e6;--warn:#9a6a00;--warn-soft:#fbf0d2;--bad:#b3261e;--bad-soft:#f9e1df;--body:'Archivo',system-ui,sans-serif;--mono:'JetBrains Mono',ui-monospace,monospace}
 @media (prefers-color-scheme:dark){:root{--bg:#141516;--panel:#1d1f21;--fg:#ecebe8;--muted:#a3a7ab;--line:#33363a;--chip:#2a2d30;--accent:#ef7a45;--accent-soft:#3a2418;--ok:#5fbf86;--ok-soft:#183324;--warn:#e0b04a;--warn-soft:#352a10;--bad:#f08a80;--bad-soft:#3a1b19}}
 *{box-sizing:border-box}[hidden]{display:none!important}
+.store{background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-top:8px}
+.store>button.sh{appearance:none;background:none;border:0;color:inherit;font:inherit;text-align:left;text-transform:none;letter-spacing:normal;box-sizing:border-box;display:grid;grid-template-columns:1fr auto;gap:2px 12px;width:100%;padding:12px 14px;cursor:pointer}
+.store>button.sh:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:8px}
+.store .sn{font-weight:600;min-width:0}.store .sm{color:var(--muted);font-size:13px;min-width:0;overflow-wrap:anywhere;white-space:normal}.store .sr{text-align:right;font-family:var(--mono);font-size:13px;grid-row:1/3;grid-column:2;align-self:center}
+.store .sb{padding:0 14px 14px;border-top:1px solid var(--line)}.store .sb a{color:var(--accent)}
+.store .cats{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0}.store .cats span{background:var(--chip);border-radius:99px;padding:2px 8px;font-size:12px}
+
 html,body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 var(--body)}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -153,7 +160,7 @@ function toast(t){ const d = el("div","toast",t); document.body.append(d); setTi
 
 // ---------- state ----------
 let TOKEN = LS.get("xmb_token"), ME = null, D = null, THUMBS = {};
-let tab = "products", cat = "All", term = "", reqFilter = "open", reqProject = "", projSel = "";
+let tab = "products", storeOpen = "", storeTerm = "", cat = "All", term = "", reqFilter = "open", reqProject = "", projSel = "";
 const openKeys = new Set();
 let CART = []; try { CART = JSON.parse(LS.get("xmb_cart") || "[]"); } catch { CART = []; }
 const saveCart = () => { LS.set("xmb_cart", JSON.stringify(CART)); cartBar(); };
@@ -223,7 +230,7 @@ const nickNames = b => (NICK.get(b) || []).map(n => n.n);
 function drawTabs(){
   const t = $("#tabs"); t.replaceChildren();
   const open = D.reqs.filter(r => r.status === "Requested" || r.status === "Verified").length;
-  const list = [["products","Products"],["requests", isMgr() ? "To purchase" : "Requests", open],["projects","Projects"]];
+  const list = [["products","Products"],["stores","Stores"],["requests", isMgr() ? "To purchase" : "Requests", open],["projects","Projects"]];
   if (ME.role === "admin") list.push(["users","Users"]);
   list.push(["account","Account"]);
   for (const [k,label,badge] of list){
@@ -236,7 +243,7 @@ function drawTabs(){
 function render(){
   if (!D) return;
   const v = $("#view"); v.replaceChildren();
-  ({products:vProducts, requests:vRequests, projects:vProjects, users:vUsers, account:vAccount, cart:vCart}[tab] || vProducts)(v);
+  ({products:vProducts, stores:vStores, requests:vRequests, projects:vProjects, users:vUsers, account:vAccount, cart:vCart}[tab] || vProducts)(v);
   cartBar();
 }
 
@@ -270,6 +277,90 @@ async function shrink(file){
   const c = document.createElement("canvas"); c.width = Math.round(bmp.width*k); c.height = Math.round(bmp.height*k);
   c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
   return c.toDataURL("image/jpeg", 0.85);
+}
+
+
+// ---------- stores ----------
+const STORE_INFO = {
+  "New City Tool Supply": {a:"517 Coney Island Ave, Brooklyn, NY 11218", ph:"718-941-3333"},
+  "Gotham Building Supply": {a:"49-29 30th Place, Long Island City, NY 11101", ph:"718-215-1258"},
+  "Home Depot": {a:"550 Hamilton Ave, Brooklyn; 545 Targee St, Staten Island; Bruckner Blvd, Bronx; Valley Stream"},
+  "East New York Hardware": {a:"2759 Atlantic Ave, Brooklyn, NY 11207", ph:"718-277-0060"},
+  "Hilti": {a:"241 37th St, Suite B121, Brooklyn, NY 11232 (Hilti Center)", ph:"1-800-879-8000"},
+  "Extech Building Materials": {a:"87 Bowne St, Brooklyn; 43-87 Vernon Blvd, Long Island City"},
+  "Casa Building Materials": {a:"1340 Bruckner Blvd, Bronx, NY 10459", ph:"718-842-8650"},
+  "Clifton Building Supply": {a:"319 Franklin Ave, Brooklyn, NY 11238", ph:"718-783-1486", note:"Formerly Citi General Hardware, 191 Clifton Pl"},
+  "Paint store (Woodhaven)": {a:"89-01 Jamaica Ave, Woodhaven, NY"},
+  "Harbor Freight": {a:"435 Hamilton Ave, Brooklyn"},
+  "Apex Plumbing Supply": {a:"822 Coney Island Ave, Brooklyn"},
+  "Lowe's (118 2nd Ave, Brooklyn)": {a:"118 2nd Ave, Brooklyn"},
+  "Sasco Tools & Equipment": {a:"432 Coney Island Ave, Brooklyn"},
+  "New Castle Building Products": {a:"535 Old Tarrytown Rd, White Plains, NY 10603", ph:"914-358-8100"},
+  "Eastern Steel Corporation": {a:"1946 Pitkin Ave, Brooklyn, NY 11207", ph:"718-495-5300"},
+  "Hempstead Building Supply & Hardware": {a:"217-68 Hempstead Ave, Queens Village, NY 11429", ph:"718-233-8085"},
+  "White Cap": {a:"21-30 Borden Ave, Long Island City"},
+  "Mobil (Kings Atlantic)": {a:"1143 Atlantic Ave, Brooklyn"}
+};
+function vStores(v){
+  const by = new Map();
+  for (const i of D.items){ const n = (i.st || "").trim(); if (!n) continue;
+    if (!by.has(n)) by.set(n, { n, items: [], spend: 0, priced: 0, last: "", cats: new Map(), prods: new Map() });
+    const g = by.get(n); g.items.push(i);
+    if (i.pr != null && i.q != null){ g.spend += i.pr * i.q; g.priced++; }
+    if (i.d > g.last) g.last = i.d;
+    if (i.c) g.cats.set(i.c, (g.cats.get(i.c)||0) + 1);
+    const pk = i.k || i.p; if (pk) g.prods.set(pk, (g.prods.get(pk)||0) + 1); }
+  const stores = [...by.values()].sort((a,b) => D.prices ? (b.spend - a.spend) || (b.items.length - a.items.length) : (b.items.length - a.items.length));
+  const search = el("input"); search.type = "search"; search.placeholder = "Search store, address or product…"; search.value = storeTerm;
+  search.setAttribute("aria-label","Search stores"); search.style.marginTop = "12px";
+  const cnt = el("div","count"), list = el("div");
+  v.append(search, cnt, list);
+  search.oninput = () => { storeTerm = search.value.trim().toLowerCase(); draw(); };
+  function draw(){
+    list.replaceChildren();
+    const words = storeTerm.split(/\s+/).filter(Boolean);
+    const shown = stores.filter(g => { const inf = STORE_INFO[g.n] || {};
+      const hay = [g.n, inf.a, inf.ph, inf.note, ...g.cats.keys(), ...g.prods.keys()].join(" ").toLowerCase();
+      return words.every(w => hay.includes(w)); });
+    cnt.textContent = `${shown.length} of ${stores.length} stores`;
+    if (!shown.length){ list.append(el("div","empty","No store matches.")); return; }
+    shown.forEach(g => list.append(storeCard(g)));
+  }
+  draw();
+}
+function storeCard(g){
+  const inf = STORE_INFO[g.n] || {};
+  const box = el("div","store"); const open = storeOpen === g.n;
+  const h = el("button","sh"); h.type = "button"; h.setAttribute("aria-expanded", open);
+  h.append(el("span","sn",g.n));
+  const right = el("span","sr"); right.append(el("div",null, D.prices && g.priced ? money(g.spend) : `${g.items.length} lines`));
+  right.append(el("div","sm", D.prices && g.priced ? `${g.items.length} lines` : ""));
+  h.append(right);
+  h.append(el("span","sm",[inf.a, g.last && "last bought " + fmtDate(g.last)].filter(Boolean).join(" · ")));
+  h.onclick = () => { storeOpen = open ? "" : g.n; render(); };
+  box.append(h);
+  if (!open) return box;
+  const b = el("div","sb");
+  if (inf.note) b.append(el("p","sm",inf.note));
+  if (inf.a){ const p = el("p",null,"📍 "); const a = el("a",null,inf.a); a.href = "https:\/\/www.google.com/maps/search/?api=1&query=" + encodeURIComponent(g.n + " " + inf.a); a.target = "_blank"; a.rel = "noopener"; p.append(a); b.append(p); }
+  if (inf.ph){ const p = el("p",null,"📞 "); const a = el("a",null,inf.ph); a.href = "tel:" + inf.ph.replace(/[^\d+]/g,""); p.append(a); b.append(p); }
+  if (!inf.a && !inf.ph) b.append(el("p","sm","No address or phone on file yet."));
+  const cats = el("div","cats"); [...g.cats.entries()].sort((a,c)=>c[1]-a[1]).slice(0,6).forEach(([c]) => cats.append(el("span",null,c))); b.append(cats);
+  b.append(el("div","sm","Most bought here:"));
+  const ul = el("ul"); [...g.prods.entries()].sort((a,c)=>c[1]-a[1]).slice(0,8).forEach(([p,n]) => ul.append(el("li",null, `${p} (${n}×)`))); b.append(ul);
+  const sc = el("div","scroll"); const tb = el("table"); const hr = el("tr");
+  const cols = ["Date","Product","Qty","Project"]; if (D.prices) cols.push("Unit price");
+  cols.forEach(x => hr.append(el("th",null,x))); tb.append(hr);
+  [...g.items].sort((a,c) => String(c.d).localeCompare(String(a.d))).slice(0,15).forEach(i => {
+    const tr = el("tr"); const t = el("td"); t.append(el("div","pname",i.p)); if (i.s) t.append(el("div","spec",i.s));
+    tr.append(el("td",null,fmtDate(i.d)), t, el("td","num",(i.q??"") + " " + (i.u||"")), el("td",null,i.pj||i.j||""));
+    if (D.prices) tr.append(el("td","num",money4(i.pr)));
+    tb.append(tr); });
+  sc.append(tb); b.append(el("div","sm","Recent purchases:"), sc);
+  const all = el("button","ghost",`See all ${g.items.length} products from this store`); all.type = "button"; all.style.marginTop = "10px";
+  all.onclick = () => { term = g.n.toLowerCase(); cat = "All"; tab = "products"; drawTabs(); render(); window.scrollTo(0,0); };
+  b.append(all);
+  box.append(b); return box;
 }
 
 // ---------- products ----------
